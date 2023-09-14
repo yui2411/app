@@ -1,11 +1,32 @@
+import json
+import pymysql
 from flask import Flask
 
 app = Flask(__name__)
 
+def getConnection():
+    return pymysql.connect(
+        host='localhost',
+        user='app',
+        password='app',
+        database='app',
+        cursorclass=pymysql.cursors.DictCursor)
 
 @app.route('/')
 def hello():
     return "<h1>Hello Flask</h1>\n"
+
+
+@app.route('/users')
+def users():
+    connection = getConnection()
+    with connection:
+        with connection.cursor() as cursor:
+            sql = "SELECT * FROM `user`"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            return json.dumps(result)
+
 
 
 if __name__ == "__main__":
